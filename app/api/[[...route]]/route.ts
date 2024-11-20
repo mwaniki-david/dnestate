@@ -9,7 +9,7 @@ import  unit from './unit';
 
 
 export const runtime = 'edge';
-export const app = new Hono().basePath('/api');
+ const app = new Hono().basePath('/api');
 
 export const  routes = app
 .route("/tenants", tenant )
