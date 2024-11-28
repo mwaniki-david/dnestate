@@ -1,22 +1,20 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/data-table";
+;
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus } from "lucide-react";
-import { columns } from "./columns";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { UseNewHouse } from "@/features/houses/hooks/use-new-house";
-import { useBulkDeleteHouse } from "@/features/houses/api/use-bulk-delete-house";
 import { useGetHouses } from "@/features/houses/api/use-get-houses";
 
 const HousesPage = () => {
   const newHouse = UseNewHouse();
-  const deletehouse = useBulkDeleteHouse();
+  
   const houseQuery = useGetHouses();
-  const house = houseQuery.data || [];
+  
 
-  const isDisabled =
-    houseQuery.isLoading || deletehouse.isPending;
+  
 
   if (houseQuery.isLoading) {
     return (
@@ -46,16 +44,6 @@ const HousesPage = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable
-            filterKey="name"
-            onDelete={(row) => {
-              const ids = row.map((r) => r.original.id);
-              deletehouse.mutate({ ids });
-            }}
-            columns={columns}
-            data={house}
-            disabled={isDisabled}
-          />
         </CardContent>
       </Card>
     </div>

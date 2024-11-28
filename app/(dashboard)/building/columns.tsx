@@ -1,5 +1,5 @@
 "use client";
-import { InferRequestType } from "hono";
+
 import { client } from "@/lib/hono";
 import { ArrowUpDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Actions } from "./actions";
 
-export type ResponseType = InferRequestType<typeof client.api.building.$get>;
+export type ResponseType = Awaited<ReturnType<typeof client.api.building.$get>>;
 
 export const columns: ColumnDef<ResponseType>[] = [
   {
@@ -54,7 +54,7 @@ export const columns: ColumnDef<ResponseType>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          ownersName
+          Owners Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -68,7 +68,7 @@ export const columns: ColumnDef<ResponseType>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          location
+          Location
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -82,7 +82,7 @@ export const columns: ColumnDef<ResponseType>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          floors
+          Floors
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -90,6 +90,6 @@ export const columns: ColumnDef<ResponseType>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <Actions id={row.original.id}/>
-  }
+    cell: ({ row }) => <Actions id={row.original.id} />,
+  },
 ];

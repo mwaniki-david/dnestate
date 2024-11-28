@@ -1,21 +1,15 @@
 "use client";
 import { UseNewTenant } from "@/features/accounts/hooks/use-new-tenant";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus } from "lucide-react";
-import { columns } from "./columns";
 import { useGetTenants } from "@/features/accounts/api/use-get-tenants";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useBulkDeleteTenants } from "@/features/accounts/api/use-bulk-delete";
 
 const TenantPage = () => {
   const newTenant = UseNewTenant();
-  const deleteTenants = useBulkDeleteTenants();
   const tenantQuery = useGetTenants();
-  const tenants = tenantQuery.data || [];
 
-  const isDisabled = tenantQuery.isLoading || deleteTenants.isPending;
 
   if (tenantQuery.isLoading) {
     return (
@@ -45,16 +39,6 @@ const TenantPage = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable
-            filterKey="name"
-            onDelete={(row) => {
-              const ids = row.map((r) =>r.original.id);
-              deleteTenants.mutate({ ids });
-            }}
-            columns={columns}
-            data={tenants}
-            disabled={isDisabled}
-          />
         </CardContent>
       </Card>
     </div>

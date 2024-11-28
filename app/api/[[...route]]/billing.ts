@@ -31,37 +31,45 @@ const app = new Hono()
     zValidator(
       "param",
       z.object({
-        id: z.string().optional(),
+        id: z.string(), // Make `id` required since the endpoint depends on it
       })
     ),
     clerkMiddleware(),
     async (c) => {
       const auth = getAuth(c);
       const { id } = c.req.valid("param");
-
-      if (!id) {
-        return c.json({ error: "Missing id" }, 400);
+  
+      // Check for missing `auth.userId`
+      if (!auth || !auth.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
       }
-      if (!id) {
-        return c.json({ error: "Unauthorised" }, 401);
-      }
+  
+      // Fetch building owner data
       const [data] = await db
         .select({
           id: buildingOwner.id,
           name: buildingOwner.name,
-          phoneNo: buildingOwner.phoneNo, 
+          phoneNo: buildingOwner.phoneNo,
           buildingName: buildingOwner.buildingName,
         })
         .from(buildingOwner)
-        .where(and(eq(buildingOwner.userId, auth?.userId), eq(buildingOwner.id, id)));
-
+        .where(
+          and(
+            eq(buildingOwner.userId, auth.userId), // Ensure the user is authorized
+            eq(buildingOwner.id, id) // Ensure the correct `id` is being accessed
+          )
+        );
+  
+      // Handle cases where no data is found
       if (!data) {
-        return c.json({ error: "Not found" }, 401);
+        return c.json({ error: "Not found" }, 404);
       }
-
+  
+      // Return the fetched data
       return c.json({ data });
     }
   )
+  
   .post(
     "/",
     clerkMiddleware(),
@@ -87,13 +95,6 @@ const app = new Hono()
           id: createId(), // Auto-generate the ID
           userId: auth.userId,
           ...values,
-          // name: values.name, // The tenant name
-          // userId: auth.userId, // The user ID
-          // floors: building.floors,
-          // ownersName: building.ownersName,
-          // ownersPhoneNo: building.ownersPhoneNo,
-          // location: building.location,
-          // buildingUnits: building.buildingUnits,
         })
         .returning();
 

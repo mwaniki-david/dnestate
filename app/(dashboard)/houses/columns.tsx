@@ -5,7 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Actions } from "./actions";
+// import { Actions } from "./actions";
 
 export type ResponseType = InferRequestType<typeof client.api.houses.$get>;
 
@@ -76,15 +76,9 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   
-  {
-    id: "actions",
-    cell: ({ row }) => <Actions id={row.original.id}/>
-  }
+  // {
+  //   id: "actions",
+  //   cell: ({ row }) => <Actions id={row.original.id}/>
+  // }
 ];
 
-
-// houseName: true,
-//   buildingName: true,
-//   phoneNo: true,
-//   rentalAmount: true,
-//   unitType: true,

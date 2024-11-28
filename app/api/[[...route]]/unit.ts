@@ -26,42 +26,53 @@ const app = new Hono()
 
     return c.json({ data });
   })
+
   .get(
     "/:id",
     zValidator(
       "param",
       z.object({
-        id: z.string().optional(),
+        id: z.string(), // Make `id` required
       })
     ),
     clerkMiddleware(),
     async (c) => {
       const auth = getAuth(c);
       const { id } = c.req.valid("param");
-
+  
+      // Check if `id` is missing
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
-      if (!id) {
-        return c.json({ error: "Unauthorised" }, 401);
+  
+      // Check if the user is authenticated
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
       }
+  
+      // Fetch unit data based on `id` and `userId`
       const [data] = await db
         .select({
           id: unit.id,
           name: unit.name,
-          phoneNo: unit.phoneNo, 
+          phoneNo: unit.phoneNo,
           buildingName: unit.buildingName,
         })
         .from(unit)
-        .where(and(eq(unit.userId, auth?.userId), eq(unit.id, id)));
-
+        .where(and(eq(unit.userId, auth.userId), eq(unit.id, id)));
+  
+      // If no data found, return 404 Not Found
       if (!data) {
-        return c.json({ error: "Not found" }, 401);
+        return c.json({ error: "Not found" }, 404);
       }
-
+  
+      // Return the fetched data
       return c.json({ data });
     }
   )
+  
+
+
   .post(
     "/",
     clerkMiddleware(),

@@ -38,30 +38,37 @@ const app = new Hono()
     async (c) => {
       const auth = getAuth(c);
       const { id } = c.req.valid("param");
-
+  
+      // Check if 'id' is missing
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
-      if (!id) {
-        return c.json({ error: "Unauthorised" }, 401);
+  
+      // Check for authorization (if userId is invalid or unauthorized)
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
       }
+  
+      // Query database for building owner details
       const [data] = await db
         .select({
           id: buildingOwner.id,
           name: buildingOwner.name,
-          phoneNo: buildingOwner.phoneNo, 
+          phoneNo: buildingOwner.phoneNo,
           buildingName: buildingOwner.buildingName,
         })
         .from(buildingOwner)
-        .where(and(eq(buildingOwner.userId, auth?.userId), eq(buildingOwner.id, id)));
-
+        .where(and(eq(buildingOwner.userId, auth.userId), eq(buildingOwner.id, id)));
+  
+      // Handle case where no matching data is found
       if (!data) {
-        return c.json({ error: "Not found" }, 401);
+        return c.json({ error: "Not found" }, 404); // Returning 404 since it wasn't found
       }
-
+  
       return c.json({ data });
     }
   )
+  
   .post(
     "/",
     clerkMiddleware(),

@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus } from "lucide-react";
-import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UseNewBuilding } from "@/features/building/hooks/use-new-building";
 import { useGetBuildings } from "@/features/building/api/use-get-buildings";
 import { useBulkDeleteBuilding } from "@/features/building/api/use-bulk-delete-building";
+import { columns } from "../building/columns";
 
 const BuildingPage = () => {
   const newBuilding = UseNewBuilding();

@@ -39,20 +39,25 @@ const app = new Hono()
     zValidator(
       "param",
       z.object({
-        id: z.string().optional(),
+        id: z.string(), // Ensure `id` is required for this endpoint
       })
     ),
     clerkMiddleware(),
     async (c) => {
       const auth = getAuth(c);
       const { id } = c.req.valid("param");
-
+  
+      // Check if `id` is missing
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
-      if (!id) {
-        return c.json({ error: "Unauthorised" }, 401);
+  
+      // Check for missing `auth.userId`
+      if (!auth || !auth.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
       }
+  
+      // Fetch building data based on `id` and `userId`
       const [data] = await db
         .select({
           id: building.id,
@@ -64,15 +69,23 @@ const app = new Hono()
           buildingUnits: building.buildingUnits,
         })
         .from(building)
-        .where(and(eq(building.userId, auth?.userId), eq(building.id, id)));
-
+        .where(
+          and(
+            eq(building.userId, auth.userId), // Ensure the building is associated with the logged-in user
+            eq(building.id, id) // Ensure the correct `id` is being queried
+          )
+        );
+  
+      // Handle cases where the building is not found
       if (!data) {
-        return c.json({ error: "Not found" }, 401);
+        return c.json({ error: "Not found" }, 404); // Return 404 if the building is not found
       }
-
+  
+      // Return the fetched data
       return c.json({ data });
     }
   )
+  
   .post(
     "/",
     clerkMiddleware(),

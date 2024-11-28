@@ -1,21 +1,21 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/data-table";
+// import { DataTable } from "@/components/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus } from "lucide-react";
-import { columns } from "./columns";
+// import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UseNewUnit } from "@/features/units/hooks/use-new-unit";
-import { useBulkDeleteunit } from "@/features/units/api/use-bulk-delete-unit";
+// import { useBulkDeleteunit } from "@/features/units/api/use-bulk-delete-unit";
 import { useGetunits } from "@/features/units/api/use-get-units";
 
 const UnitPage = () => {
   const newUnit = UseNewUnit();
-  const deleteUnit = useBulkDeleteunit();
+  // const deleteUnit = useBulkDeleteunit();
   const unitQuery = useGetunits();
-  const unit = unitQuery.data || [];
+  // const unit = unitQuery.data || [];
 
-  const isDisabled = unitQuery.isLoading || deleteUnit.isPending;
+  // const isDisabled = unitQuery.isLoading || deleteUnit.isPending;
 
   if (unitQuery.isLoading) {
     return (
@@ -45,7 +45,7 @@ const UnitPage = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable
+          {/* <DataTable
             filterKey="name"
             onDelete={(row) => {
               const ids = row.map((r) =>r.original.id);
@@ -54,7 +54,7 @@ const UnitPage = () => {
             columns={columns}
             data={unit}
             disabled={isDisabled}
-          />
+          /> */}
         </CardContent>
       </Card>
     </div>

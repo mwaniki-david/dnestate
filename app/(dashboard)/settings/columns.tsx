@@ -1,11 +1,11 @@
 "use client";
 import { InferRequestType } from "hono";
-import { client } from "@/lib/hono";
 import { ArrowUpDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Actions } from "./actions";
+// import { Actions } from "./actions";
+import { client } from "@/lib/hono";
 
 export type ResponseType = InferRequestType<typeof client.api.tenants.$get>;
 
@@ -88,8 +88,8 @@ export const columns: ColumnDef<ResponseType>[] = [
       );
     },
   },
-  {
-    id: "actions",
-    cell: ({ row }) => <Actions id={row.original.id}/>
-  }
+  // {
+  //   id: "actions",
+  //   cell: ({ row }) => <Actions id={row.original.id}/>
+  // }
 ];

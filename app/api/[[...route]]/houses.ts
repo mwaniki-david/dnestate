@@ -35,29 +35,27 @@ const app = new Hono()
     zValidator(
       "param",
       z.object({
-        id: z.string().optional(),
+        id: z.string(), // Make `id` required since the endpoint depends on it
       })
     ),
     clerkMiddleware(),
     async (c) => {
       const auth = getAuth(c);
       const { id } = c.req.valid("param");
-
+  
+      // Check if `id` is missing
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
-      if (!id) {
-        return c.json({ error: "Unauthorised" }, 401);
+  
+      // Check for missing `auth.userId`
+      if (!auth || !auth.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
       }
+  
+      // Fetch house data based on `id` and `userId`
       const [data] = await db
         .select({
-          // id: building.id,
-          // name: building.name,
-          // floors: building.floors,
-          // ownersName: building.ownersName,
-          // ownersPhoneNo: building.ownersPhoneNo,
-          // location: building.location,
-          // buildingUnits: building.buildingUnits,
           id: houses.id,
           houseName: houses.houseName,
           rentalAmount: houses.rentalAmount,
@@ -66,15 +64,23 @@ const app = new Hono()
           buildingName: houses.buildingName,
         })
         .from(houses)
-        .where(and(eq(houses.userId, auth?.userId), eq(houses.id, id)));
-
+        .where(
+          and(
+            eq(houses.userId, auth.userId), // Ensure the house is associated with the logged-in user
+            eq(houses.id, id) // Ensure the correct `id` is being queried
+          )
+        );
+  
+      // Handle cases where the house is not found
       if (!data) {
-        return c.json({ error: "Not found" }, 401);
+        return c.json({ error: "Not found" }, 404); // Return 404 if the house is not found
       }
-
+  
+      // Return the fetched data
       return c.json({ data });
     }
   )
+  
   .post(
     "/",
     clerkMiddleware(),
